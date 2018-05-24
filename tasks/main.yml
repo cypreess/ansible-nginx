@@ -9,3 +9,29 @@
 
 - name: Ensure Nginx service is started
   service: name=nginx state=started enabled=yes
+
+- name: Download certbot
+  get_url: url=https://dl.eff.org/certbot-auto dest=/usr/local/bin/certbot-auto mode=0755
+  tags:
+    - certbot
+
+- file: dest=/usr/local/certbot-renew-all state=directory mode=0777
+  tags:
+    - certbot
+
+- file: dest=/usr/local/certbot-renew-all/enabled state=directory mode=0777
+  tags:
+    - certbot
+
+- name: Install script for refreshing SSL certificates
+  template: src=certbot-renew-all.sh dest=/usr/local/certbot-renew-all/certbot-renew-all.sh mode=0755
+  tags:
+    - certbot
+
+- name: Ensure a cron job to auto-renew the cert exists
+  cron: name="daily auto renew cert"
+        special_time=daily
+        job="/usr/local/certbot-renew-all/certbot-renew-all.sh"
+        state=present
+  tags:
+    - certbot
