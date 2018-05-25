@@ -31,7 +31,7 @@
 - name: Ensure a cron job to auto-renew the cert exists
   cron: name="daily auto renew cert"
         special_time=daily
-        job="/usr/local/certbot-renew-all/certbot-renew-all.sh"
+        job="cd /usr/local/certbot-renew-all/ && ./certbot-renew-all.sh"
         state=present
   tags:
     - certbot
